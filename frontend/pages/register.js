@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
-// Removed: import styles from '../styles/Auth.module.css';
+import { useRouter } from 'next/router';
 
 export default function Register() {
     const { register, user, loading } = useAuth();
+    const router = useRouter();
     const [formData, setFormData] = useState({
         username: '',
         email: '',
@@ -14,6 +15,12 @@ export default function Register() {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { username, email, password, password2 } = formData;
+
+    useEffect(() => {
+        if (!loading && user) {
+            router.push('/dashboard');
+        }
+    }, [user, loading, router]);
 
     const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -38,25 +45,22 @@ export default function Register() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center text-xl text-gray-600 bg-gradient-to-br from-purple-50 to-blue-50">
+            <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light text-muted">
                 Loading...
             </div>
         );
     }
 
-    // If user is already logged in, redirect to dashboard
     if (user && !loading) {
-        // This redirect is handled by useEffect in AuthContext, but a quick check here
-        // prevents rendering the form if already authenticated.
         return null;
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-purple-50 to-blue-50">
-            <h1 className="text-4xl font-bold text-purple-800 mb-6 text-center drop-shadow-sm">Register</h1>
-            <form onSubmit={onSubmit} className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md flex flex-col gap-5 border border-purple-100">
-                <div className="flex flex-col">
-                    <label htmlFor="username" className="mb-2 font-semibold text-gray-700">Username</label>
+        <div className="d-flex flex-column justify-content-center align-items-center min-vh-100 p-4 bg-light">
+            <h1 className="display-5 fw-bold text-purple mb-4 text-center">Register</h1>
+            <form onSubmit={onSubmit} className="bg-white p-5 rounded-4 shadow-lg border border-purple-100" style={{ maxWidth: '28rem', width: '100%' }}>
+                <div className="mb-3">
+                    <label htmlFor="username" className="form-label fw-semibold text-dark">Username</label>
                     <input
                         type="text"
                         id="username"
@@ -64,11 +68,11 @@ export default function Register() {
                         value={username}
                         onChange={onChange}
                         required
-                        className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+                        className="form-control"
                     />
                 </div>
-                <div className="flex flex-col">
-                    <label htmlFor="email" className="mb-2 font-semibold text-gray-700">Email</label>
+                <div className="mb-3">
+                    <label htmlFor="email" className="form-label fw-semibold text-dark">Email</label>
                     <input
                         type="email"
                         id="email"
@@ -76,11 +80,11 @@ export default function Register() {
                         value={email}
                         onChange={onChange}
                         required
-                        className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+                        className="form-control"
                     />
                 </div>
-                <div className="flex flex-col">
-                    <label htmlFor="password" className="mb-2 font-semibold text-gray-700">Password</label>
+                <div className="mb-3">
+                    <label htmlFor="password" className="form-label fw-semibold text-dark">Password</label>
                     <input
                         type="password"
                         id="password"
@@ -89,11 +93,11 @@ export default function Register() {
                         onChange={onChange}
                         required
                         minLength="6"
-                        className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+                        className="form-control"
                     />
                 </div>
-                <div className="flex flex-col">
-                    <label htmlFor="password2" className="mb-2 font-semibold text-gray-700">Confirm Password</label>
+                <div className="mb-4">
+                    <label htmlFor="password2" className="form-label fw-semibold text-dark">Confirm Password</label>
                     <input
                         type="password"
                         id="password2"
@@ -102,15 +106,15 @@ export default function Register() {
                         onChange={onChange}
                         required
                         minLength="6"
-                        className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200"
+                        className="form-control"
                     />
                 </div>
-                <button type="submit" className="bg-purple-600 text-white p-3 rounded-lg text-lg font-bold hover:bg-purple-700 transition-colors duration-300 shadow-md hover:shadow-lg" disabled={isSubmitting}>
+                <button type="submit" className="btn btn-primary btn-lg w-100 shadow-sm" disabled={isSubmitting}>
                     {isSubmitting ? 'Registering...' : 'Register'}
                 </button>
             </form>
-            <p className="mt-5 text-gray-600 text-center">
-                Already have an account? <Link href="/login" className="text-purple-700 font-bold hover:underline">Login</Link>
+            <p className="mt-4 text-muted text-center">
+                Already have an account? <Link href="/login" className="text-purple fw-bold text-decoration-none">Login</Link>
             </p>
         </div>
     );

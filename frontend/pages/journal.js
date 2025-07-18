@@ -73,38 +73,40 @@ export default function Journal() {
     };
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center text-xl text-gray-600 bg-gradient-to-br from-purple-50 to-blue-50">
+        <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light text-muted">
             Loading journal...
         </div>
     );
     if (!user) return null;
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-6 bg-gradient-to-br from-purple-50 to-blue-50">
-            <header className="w-full max-w-3xl flex justify-between items-center py-5 border-b border-purple-200 mb-8">
-                <h1 className="text-3xl font-bold text-purple-800 m-0">Your Journal 📓</h1>
-                <button onClick={() => router.push('/dashboard')} className="bg-purple-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-purple-700 transition-colors duration-300">
+        <div className="d-flex flex-column align-items-center min-vh-100 p-4 bg-light">
+            <header className="w-100 d-flex justify-content-between align-items-center py-3 border-bottom mb-4" style={{ maxWidth: '800px' }}>
+                <h1 className="h3 fw-bold text-dark m-0">Your Journal 📓</h1>
+                <button onClick={() => router.push('/dashboard')} className="btn btn-secondary shadow-sm">
                     Back to Dashboard
                 </button>
             </header>
 
-            <main className="w-full max-w-3xl flex flex-col gap-8">
-                <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-2xl flex flex-col gap-4 border border-purple-100">
-                    <textarea
-                        value={newEntryContent}
-                        onChange={(e) => setNewEntryContent(e.target.value)}
-                        placeholder="What's on your mind today?"
-                        rows="6"
-                        required
-                        className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200 text-gray-800"
-                    ></textarea>
-                    <div className="flex flex-col gap-2">
-                        <label htmlFor="mood" className="font-semibold text-gray-700 text-base">How are you feeling?</label>
+            <main className="w-100" style={{ maxWidth: '800px' }}>
+                <form onSubmit={handleSubmit} className="bg-white p-4 rounded-4 shadow-lg mb-4 border border-light">
+                    <div className="mb-3">
+                        <textarea
+                            value={newEntryContent}
+                            onChange={(e) => setNewEntryContent(e.target.value)}
+                            placeholder="What's on your mind today?"
+                            rows="6"
+                            required
+                            className="form-control"
+                        ></textarea>
+                    </div>
+                    <div className="mb-4">
+                        <label htmlFor="mood" className="form-label fw-semibold text-dark">How are you feeling?</label>
                         <select
                             id="mood"
                             value={newEntryMood}
                             onChange={(e) => setNewEntryMood(e.target.value)}
-                            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all duration-200 bg-white text-gray-800"
+                            className="form-select"
                         >
                             <option value="">Select Mood</option>
                             <option value="happy">😊 Happy</option>
@@ -115,41 +117,43 @@ export default function Journal() {
                             <option value="grateful">🙏 Grateful</option>
                         </select>
                     </div>
-                    <div className="flex gap-4 mt-2">
-                        <button type="submit" className="bg-purple-600 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-purple-700 transition-colors duration-300 shadow-md hover:shadow-lg flex-grow">
+                    <div className="d-flex gap-3">
+                        <button type="submit" className="btn btn-primary btn-lg flex-grow-1 shadow-sm">
                             {editingEntryId ? 'Update Entry' : 'Add Entry'}
                         </button>
                         {editingEntryId && (
-                            <button type="button" onClick={() => { setNewEntryContent(''); setNewEntryMood(''); setEditingEntryId(null); }} className="bg-gray-500 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-gray-600 transition-colors duration-300 shadow-md hover:shadow-lg flex-grow">
+                            <button type="button" onClick={() => { setNewEntryContent(''); setNewEntryMood(''); setEditingEntryId(null); }} className="btn btn-secondary btn-lg flex-grow-1 shadow-sm">
                                 Cancel Edit
                             </button>
                         )}
                     </div>
                 </form>
 
-                <div className="flex flex-col gap-5">
+                <div className="d-flex flex-column gap-3">
                     {entries.length === 0 && (
-                        <p className="text-center text-gray-600 italic p-8 bg-white rounded-xl shadow-md border border-gray-100">
+                        <p className="text-center text-muted p-4 bg-white rounded-4 shadow-sm border border-light">
                             No journal entries yet. Start writing!
                         </p>
                     )}
                     {entries.map((entry) => (
-                        <div key={entry._id} className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-purple-500 relative">
-                            <p className="text-sm text-gray-500 mb-2 pb-2 border-b border-dashed border-gray-200">
-                                {new Date(entry.date).toLocaleDateString()} - {new Date(entry.date).toLocaleTimeString()}
-                            </p>
-                            <ReactMarkdown className="text-gray-800 text-base leading-relaxed mb-4">{entry.content}</ReactMarkdown>
-                            <p className="text-sm text-gray-600 mb-1">Mood: {entry.mood || 'N/A'}</p>
-                            <p className="text-sm text-gray-600">
-                                Sentiment: <strong className="text-purple-700">{entry.sentiment?.label || 'N/A'}</strong> (Score: {entry.sentiment?.score?.toFixed(2) || 'N/A'})
-                            </p>
-                            <div className="flex gap-3 mt-4 pt-4 border-t border-dashed border-gray-200">
-                                <button onClick={() => handleEdit(entry)} className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition-colors duration-300 shadow-sm">
-                                    Edit
-                                </button>
-                                <button onClick={() => handleDelete(entry._id)} className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition-colors duration-300 shadow-sm">
-                                    Delete
-                                </button>
+                        <div key={entry._id} className="card shadow-sm border-0 rounded-4" style={{ borderLeft: '5px solid #6f42c1' }}>
+                            <div className="card-body">
+                                <p className="card-subtitle text-muted mb-2 border-bottom pb-2">
+                                    {new Date(entry.date).toLocaleDateString()} - {new Date(entry.date).toLocaleTimeString()}
+                                </p>
+                                <ReactMarkdown className="card-text text-dark mb-3">{entry.content}</ReactMarkdown>
+                                <p className="card-text text-muted mb-1">Mood: {entry.mood || 'N/A'}</p>
+                                <p className="card-text text-muted">
+                                    Sentiment: <strong className="text-purple">{entry.sentiment?.label || 'N/A'}</strong> (Score: {entry.sentiment?.score?.toFixed(2) || 'N/A'})
+                                </p>
+                                <div className="d-flex gap-2 mt-3 pt-3 border-top">
+                                    <button onClick={() => handleEdit(entry)} className="btn btn-sm btn-success shadow-sm">
+                                        Edit
+                                    </button>
+                                    <button onClick={() => handleDelete(entry._id)} className="btn btn-sm btn-danger shadow-sm">
+                                        Delete
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     ))}

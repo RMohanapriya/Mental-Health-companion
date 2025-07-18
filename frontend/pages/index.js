@@ -2,30 +2,34 @@ import Link from 'next/link';
 
 export default function Home() {
     return (
-        <div className="min-h-screen flex flex-col justify-center items-center p-8 bg-gradient-to-br from-emerald-50 to-blue-100">
-            <main className="flex flex-col justify-center items-center text-center max-w-4xl w-full py-20">
-                <h1 className="text-5xl font-extrabold text-gray-800 leading-tight mb-4 drop-shadow-md">
+        <div className="d-flex flex-column justify-content-center align-items-center min-vh-100 p-4 bg-light">
+            <main className="text-center py-5">
+                <h1 className="display-4 fw-bold text-dark mb-4">
                     Welcome to Your Mental Health Companion <span role="img" aria-label="brain">🧠</span><span role="img" aria-label="sparkles">✨</span>
                 </h1>
-                <p className="text-xl text-gray-600 mb-10">
+                <p className="lead text-muted mb-5">
                     Journal your thoughts and chat with our supportive AI.
                 </p>
-                <div className="flex flex-wrap justify-center gap-6 w-full">
-                    <Link href="/register" className="flex flex-col items-start p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm w-full border border-gray-100">
-                        <h2 className="text-2xl font-semibold text-blue-700 mb-2">
-                            Register &rarr;
-                        </h2>
-                        <p className="text-lg text-gray-700">
-                            Create your account to start your journey.
-                        </p>
+                <div className="d-flex flex-wrap justify-content-center gap-4">
+                    <Link href="/register" className="card shadow-lg border-0 rounded-4 p-4 text-start text-decoration-none" style={{ maxWidth: '22rem', width: '100%' }}>
+                        <div className="card-body">
+                            <h2 className="card-title h4 fw-bold text-primary mb-2">
+                                Register &rarr;
+                            </h2>
+                            <p className="card-text text-muted">
+                                Create your account to start your journey.
+                            </p>
+                        </div>
                     </Link>
-                    <Link href="/login" className="flex flex-col items-start p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm w-full border border-gray-100">
-                        <h2 className="text-2xl font-semibold text-green-700 mb-2">
-                            Login &rarr;
-                        </h2>
-                        <p className="text-lg text-gray-700">
-                            Access your existing journal and chat.
-                        </p>
+                    <Link href="/login" className="card shadow-lg border-0 rounded-4 p-4 text-start text-decoration-none" style={{ maxWidth: '22rem', width: '100%' }}>
+                        <div className="card-body">
+                            <h2 className="card-title h4 fw-bold text-success mb-2">
+                                Login &rarr;
+                            </h2>
+                            <p className="card-text text-muted">
+                                Access your existing journal and chat.
+                            </p>
+                        </div>
                     </Link>
                 </div>
             </main>

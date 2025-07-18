@@ -9,7 +9,7 @@ export default function Chatbot() {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const messagesEndRef = useRef(null);
-    const [isSending, setIsSending] = useState(false); // New state for sending status
+    const [isSending, setIsSending] = useState(false);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -40,13 +40,13 @@ export default function Chatbot() {
         e.preventDefault();
         if (!input.trim() || isSending) return;
 
-        setIsSending(true); // Set sending state to true
+        setIsSending(true);
 
         const userMessage = {
             message: input,
             isBot: false,
             timestamp: new Date().toISOString(),
-            sentiment: { label: 'Analyzing...', score: 0 } // Optimistic sentiment
+            sentiment: { label: 'Analyzing...', score: 0 }
         };
 
         setMessages(prevMessages => [...prevMessages, userMessage]);
@@ -57,56 +57,57 @@ export default function Chatbot() {
             setMessages(prevMessages => [...prevMessages.filter(msg => msg !== userMessage), ...res.data]);
         } catch (err) {
             console.error('Error sending message:', err.response?.data?.msg || err.message);
-            setMessages(prevMessages => prevMessages.filter(msg => msg !== userMessage)); // Remove optimistic message on error
+            setMessages(prevMessages => prevMessages.filter(msg => msg !== userMessage));
         } finally {
-            setIsSending(false); // Reset sending state
+            setIsSending(false);
         }
     };
 
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center text-xl text-gray-600 bg-gradient-to-br from-green-50 to-blue-50">
+        <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light text-muted">
             Loading chatbot...
         </div>
     );
     if (!user) return null;
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-6 bg-gradient-to-br from-green-50 to-blue-50">
-            <header className="w-full max-w-2xl flex justify-between items-center py-5 border-b border-green-200 mb-8">
-                <h1 className="text-3xl font-bold text-green-800 m-0">Chat with Your Companion Bot 🤖💬</h1>
-                <button onClick={() => router.push('/dashboard')} className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300">
+        <div className="d-flex flex-column align-items-center min-vh-100 p-4 bg-light">
+            <header className="w-100 d-flex justify-content-between align-items-center py-3 border-bottom mb-4" style={{ maxWidth: '700px' }}>
+                <h1 className="h3 fw-bold text-dark m-0">Chat with Your Companion Bot 🤖💬</h1>
+                <button onClick={() => router.push('/dashboard')} className="btn btn-secondary shadow-sm">
                     Back to Dashboard
                 </button>
             </header>
 
-            <main className="w-full max-w-2xl flex flex-col flex-grow bg-white rounded-xl shadow-2xl border border-green-100 overflow-hidden">
-                <div className="flex-grow p-5 overflow-y-auto flex flex-col gap-4" style={{ minHeight: '300px' }}> {/* Added minHeight for chat window */}
+            <main className="w-100 d-flex flex-column flex-grow-1 bg-white rounded-4 shadow-lg border border-light overflow-hidden" style={{ maxWidth: '700px', height: 'calc(100vh - 12rem)' }}>
+                <div className="flex-grow-1 p-4 overflow-auto d-flex flex-column gap-3">
                     {messages.map((msg, index) => (
                         <div
                             key={index}
-                            className={`flex flex-col max-w-[75%] p-3 rounded-xl shadow-sm ${msg.isBot ? 'self-start bg-green-50 text-green-800 border border-green-100' : 'self-end bg-blue-50 text-blue-800 border border-blue-100'}`}
+                            className={`d-flex flex-column p-3 rounded-3 shadow-sm ${msg.isBot ? 'align-self-start bg-light-green text-green' : 'align-self-end bg-light-blue text-blue'}`}
+                            style={{ maxWidth: '75%' }}
                         >
                             <span className="text-base mb-1">{msg.message}</span>
-                            <span className="text-xs text-gray-500 self-end">
+                            <span className="text-muted text-sm align-self-end">
                                 {new Date(msg.timestamp).toLocaleTimeString()}
                                 {!msg.isBot && msg.sentiment && (
-                                    <span className="ml-2 italic">({msg.sentiment.label} Score: {msg.sentiment.score?.toFixed(2) || 'N/A'})</span>
+                                    <span className="ms-2 fst-italic text-xs">({msg.sentiment.label} Score: {msg.sentiment.score?.toFixed(2) || 'N/A'})</span>
                                 )}
                             </span>
                         </div>
                     ))}
                     <div ref={messagesEndRef} />
                 </div>
-                <form onSubmit={handleSendMessage} className="flex p-4 border-t border-gray-200 bg-gray-50">
+                <form onSubmit={handleSendMessage} className="d-flex p-3 border-top bg-light">
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type your message here..."
-                        className="flex-grow p-3 border border-gray-300 rounded-full mr-3 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200 text-gray-800"
+                        className="form-control me-3 rounded-pill"
                         disabled={isSending}
                     />
-                    <button type="submit" className="bg-green-600 text-white px-5 py-2 rounded-full text-lg font-bold hover:bg-green-700 transition-colors duration-300 shadow-md hover:shadow-lg" disabled={isSending}>
+                    <button type="submit" className="btn btn-primary rounded-pill shadow-sm" disabled={isSending}>
                         {isSending ? 'Sending...' : 'Send'}
                     </button>
                 </form>

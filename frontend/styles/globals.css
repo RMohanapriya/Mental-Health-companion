@@ -1,15 +1,47 @@
 /* frontend/styles/globals.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ... (existing global styles and Bootstrap imports) ... */
 
-/* You can add any custom global CSS here if absolutely necessary,
-   but try to use Tailwind utilities first. */
+/* Custom colors for Bootstrap */
+.text-purple {
+  color: #673ab7 !important; /* Deep purple */
+}
+.border-purple-100 {
+  border-color: #d1c4e9 !important; /* Light purple border */
+}
+.text-primary {
+  color: #007bff !important; /* Bootstrap primary blue */
+}
+.text-success {
+  color: #28a745 !important; /* Bootstrap success green */
+}
+.text-blue {
+  color: #007bff !important;
+}
+.text-green {
+  color: #28a745 !important;
+}
 
-/* Basic font for consistency, if not covered by Tailwind defaults */
-body {
-  font-family: 'Inter', sans-serif; /* Using Inter as a modern, clean font */
-  /* Ensure no default margins/padding that might conflict */
-  margin: 0;
-  padding: 0;
+/* Custom background colors */
+.bg-light-green {
+  background-color: #e8f5e9 !important; /* Light green for bot messages */
+}
+.bg-light-blue {
+  background-color: #e3f2fd !important; /* Light blue for user messages */
+}
+
+/* Custom font sizes for chat/sentiment */
+.text-sm {
+  font-size: 0.875rem !important; /* 14px */
+}
+.text-xs {
+  font-size: 0.75rem !important; /* 12px */
+}
+.fst-italic {
+  font-style: italic !important;
+}
+
+/* Ensure images are responsive by default */
+img {
+  max-width: 100%;
+  height: auto;
 }

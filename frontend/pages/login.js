@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-// Removed: import styles from '../styles/Auth.module.css';
 
 export default function Login() {
     const { login, user, loading } = useAuth();
@@ -15,7 +14,6 @@ export default function Login() {
 
     const { email, password } = formData;
 
-    // Redirect to dashboard if already logged in and not loading
     useEffect(() => {
         if (!loading && user) {
             router.push('/dashboard');
@@ -40,23 +38,22 @@ export default function Login() {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center text-xl text-gray-600 bg-gradient-to-br from-purple-50 to-blue-50">
+            <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light text-muted">
                 Loading...
             </div>
         );
     }
 
-    // If user is already logged in, redirect to dashboard
     if (user && !loading) {
         return null;
     }
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-purple-50 to-blue-50">
-            <h1 className="text-4xl font-bold text-blue-800 mb-6 text-center drop-shadow-sm">Login</h1>
-            <form onSubmit={onSubmit} className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md flex flex-col gap-5 border border-blue-100">
-                <div className="flex flex-col">
-                    <label htmlFor="email" className="mb-2 font-semibold text-gray-700">Email</label>
+        <div className="d-flex flex-column justify-content-center align-items-center min-vh-100 p-4 bg-light">
+            <h1 className="display-5 fw-bold text-primary mb-4 text-center">Login</h1>
+            <form onSubmit={onSubmit} className="bg-white p-5 rounded-4 shadow-lg border border-primary-100" style={{ maxWidth: '28rem', width: '100%' }}>
+                <div className="mb-3">
+                    <label htmlFor="email" className="form-label fw-semibold text-dark">Email</label>
                     <input
                         type="email"
                         id="email"
@@ -64,11 +61,11 @@ export default function Login() {
                         value={email}
                         onChange={onChange}
                         required
-                        className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                        className="form-control"
                     />
                 </div>
-                <div className="flex flex-col">
-                    <label htmlFor="password" className="mb-2 font-semibold text-gray-700">Password</label>
+                <div className="mb-4">
+                    <label htmlFor="password" className="form-label fw-semibold text-dark">Password</label>
                     <input
                         type="password"
                         id="password"
@@ -76,15 +73,15 @@ export default function Login() {
                         value={password}
                         onChange={onChange}
                         required
-                        className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"
+                        className="form-control"
                     />
                 </div>
-                <button type="submit" className="bg-blue-600 text-white p-3 rounded-lg text-lg font-bold hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg" disabled={isSubmitting}>
+                <button type="submit" className="btn btn-primary btn-lg w-100 shadow-sm" disabled={isSubmitting}>
                     {isSubmitting ? 'Logging In...' : 'Login'}
                 </button>
             </form>
-            <p className="mt-5 text-gray-600 text-center">
-                Don&apos;t have an account? <Link href="/register" className="text-blue-700 font-bold hover:underline">Register</Link>
+            <p className="mt-4 text-muted text-center">
+                Don&apos;t have an account? <Link href="/register" className="text-primary fw-bold text-decoration-none">Register</Link>
             </p>
         </div>
     );

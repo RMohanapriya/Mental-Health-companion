@@ -73,7 +73,7 @@ export default function Dashboard() {
                     {
                         label: 'Average Daily Sentiment',
                         data: dataPoints,
-                        borderColor: 'rgb(75, 192, 192)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
                         tension: 0.1,
                         fill: true,
@@ -91,10 +91,10 @@ export default function Dashboard() {
                         display: true,
                         text: 'Your Average Daily Sentiment Over Time',
                         font: {
-                            size: 18, // Adjust chart title font size
+                            size: 18,
                             weight: 'bold'
                         },
-                        color: '#333' // Chart title color
+                        color: '#343a40'
                     },
                 },
                 scales: {
@@ -107,10 +107,10 @@ export default function Dashboard() {
                             font: {
                                 size: 14
                             },
-                            color: '#555'
+                            color: '#6c757d'
                         },
                         grid: {
-                            color: 'rgba(0,0,0,0.05)' // Lighter grid lines
+                            color: 'rgba(0,0,0,0.05)'
                         }
                     },
                     x: {
@@ -126,9 +126,8 @@ export default function Dashboard() {
         }
     };
 
-
     if (loading) return (
-        <div className="min-h-screen flex items-center justify-center text-xl text-gray-600 bg-gradient-to-br from-blue-50 to-purple-50">
+        <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light text-muted">
             Loading dashboard...
         </div>
     );
@@ -136,41 +135,49 @@ export default function Dashboard() {
     if (!user) return null;
 
     return (
-        <div className="min-h-screen flex flex-col items-center p-6 bg-gradient-to-br from-blue-50 to-purple-50">
-            <header className="w-full max-w-4xl flex justify-between items-center py-5 border-b border-blue-200 mb-8">
-                <h1 className="text-3xl font-bold text-blue-800 m-0">Hello, {user?.username}! 👋</h1>
-                <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300">
+        <div className="d-flex flex-column align-items-center min-vh-100 p-4 bg-light">
+            <header className="w-100 d-flex justify-content-between align-items-center py-3 border-bottom mb-4" style={{ maxWidth: '900px' }}>
+                <h1 className="h3 fw-bold text-dark m-0">Hello, {user?.username}! 👋</h1>
+                <button onClick={logout} className="btn btn-danger shadow-sm">
                     Logout
                 </button>
             </header>
-            <main className="w-full max-w-4xl flex flex-col items-center">
-                <p className="text-lg text-gray-600 mb-10 text-center">
+            <main className="w-100" style={{ maxWidth: '900px' }}>
+                <p className="lead text-muted mb-5 text-center">
                     Welcome to your mental health dashboard. How are you feeling today?
                 </p>
-                <div className="flex flex-wrap justify-center gap-6 w-full mb-12">
-                    <Link href="/journal" className="flex flex-col items-start p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm w-full border border-blue-100">
-                        <h2 className="text-2xl font-semibold text-blue-700 mb-2">
-                            Journal &rarr;
-                        </h2>
-                        <p className="text-lg text-gray-700">
-                            Express your thoughts and track your mood.
-                        </p>
-                    </Link>
-                    <Link href="/chatbot" className="flex flex-col items-start p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm w-full border border-purple-100">
-                        <h2 className="text-2xl font-semibold text-purple-700 mb-2">
-                            Chatbot &rarr;
-                        </h2>
-                        <p className="text-lg text-gray-700">
-                            Talk to our AI companion for support.
-                        </p>
-                    </Link>
+                <div className="row g-4 mb-5 justify-content-center">
+                    <div className="col-md-6">
+                        <Link href="/journal" className="card shadow-lg border-0 rounded-4 p-4 text-start text-decoration-none h-100">
+                            <div className="card-body">
+                                <h2 className="card-title h4 fw-bold text-primary mb-2">
+                                    Journal &rarr;
+                                </h2>
+                                <p className="card-text text-muted">
+                                    Express your thoughts and track your mood.
+                                </p>
+                            </div>
+                        </Link>
+                    </div>
+                    <div className="col-md-6">
+                        <Link href="/chatbot" className="card shadow-lg border-0 rounded-4 p-4 text-start text-decoration-none h-100">
+                            <div className="card-body">
+                                <h2 className="card-title h4 fw-bold text-success mb-2">
+                                    Chatbot &rarr;
+                                </h2>
+                                <p className="card-text text-muted">
+                                    Talk to our AI companion for support.
+                                </p>
+                            </div>
+                        </Link>
+                    </div>
                 </div>
-                <div className="bg-white p-8 rounded-xl shadow-2xl w-full border border-gray-100">
-                    <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Your Sentiment Trends Over Time 📈</h3>
+                <div className="bg-white p-5 rounded-4 shadow-lg border border-light">
+                    <h3 className="h4 fw-bold text-dark mb-4 text-center">Your Sentiment Trends Over Time 📈</h3>
                     {chartData ? (
                         <Line options={chartOptions} data={chartData} />
                     ) : (
-                        <p className="text-gray-500 text-center py-8">No journal entries yet, or data is loading. Start journaling to see your trends!</p>
+                        <p className="text-muted text-center py-5">No journal entries yet, or data is loading. Start journaling to see your trends!</p>
                     )}
                 </div>
             </main>
