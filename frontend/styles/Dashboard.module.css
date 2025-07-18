@@ -1,8 +1,8 @@
 /* frontend/styles/Dashboard.module.css */
 .container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); /* Soft blue-purple gradient */
-  padding: 20px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+  padding: 1.25rem; /* Use rem */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -14,25 +14,25 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
+  padding: 1.25rem 0; /* Use rem */
   border-bottom: 1px solid #cfd8dc;
-  margin-bottom: 30px;
+  margin-bottom: 1.875rem; /* Use rem */
 }
 
 .header h1 {
-  color: #3f51b5; /* Indigo */
+  color: #3f51b5;
   font-size: 2.5rem;
   margin: 0;
 }
 
 .logoutButton {
-  background-color: #f44336; /* Red for logout */
+  background-color: #f44336;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 .logoutButton:hover {
   background-color: #d32f2f;
-  transform: translateY(-1px);
+  transform: translateY(-0.125rem);
 }
 
 .main {
@@ -46,7 +46,7 @@
 .welcomeText {
   font-size: 1.2rem;
   color: #555;
-  margin-bottom: 40px;
+  margin-bottom: 2.5rem; /* Use rem */
   text-align: center;
 }
 
@@ -54,36 +54,36 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 25px;
+  gap: 1.5rem; /* Use rem */
   width: 100%;
-  margin-bottom: 50px;
+  margin-bottom: 3.125rem; /* Use rem */
 }
 
 .card {
-  flex-basis: 48%; /* Almost half, with gap */
-  min-width: 300px;
+  flex-basis: calc(50% - 1.5rem); /* Approx half, accounting for gap */
+  min-width: 18rem; /* Use rem */
   background-color: white;
-  padding: 25px;
-  border-radius: 12px;
+  padding: 1.5rem; /* Use rem */
+  border-radius: 0.75rem; /* Use rem */
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  text-decoration: none; /* Remove underline from Link */
+  text-decoration: none;
   color: inherit;
 }
 
 .card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-0.5rem);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
 .card h2 {
   color: #424242;
   font-size: 1.8rem;
-  margin-bottom: 10px;
+  margin-bottom: 0.625rem; /* Use rem */
 }
 
 .card p {
@@ -94,17 +94,17 @@
 
 .chartContainer {
   background-color: white;
-  padding: 30px;
-  border-radius: 12px;
+  padding: 1.875rem; /* Use rem */
+  border-radius: 0.75rem; /* Use rem */
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 800px; /* Limit chart width */
+  max-width: 800px;
   text-align: center;
 }
 
 .chartContainer h3 {
   color: #3f51b5;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem; /* Use rem */
   font-size: 1.8rem;
 }
 
@@ -120,12 +120,43 @@
 @media (max-width: 768px) {
   .header {
     flex-direction: column;
-    gap: 15px;
+    gap: 1rem;
+    padding: 1rem 0;
   }
   .header h1 {
     font-size: 2rem;
   }
   .card {
     flex-basis: 100%;
+  }
+  .welcomeText {
+    margin-bottom: 1.5rem;
+  }
+  .chartContainer {
+    padding: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 1rem;
+  }
+  .header {
+    margin-bottom: 1.5rem;
+  }
+  .header h1 {
+    font-size: 1.8rem;
+  }
+  .welcomeText {
+    font-size: 1rem;
+  }
+  .card h2 {
+    font-size: 1.6rem;
+  }
+  .card p {
+    font-size: 0.9rem;
+  }
+  .grid {
+    gap: 1rem;
   }
 }
