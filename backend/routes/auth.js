@@ -1,46 +1,35 @@
 const express = require('express');
-const router = express.Router(); // Create a new router object
-const bcrypt = require('bcryptjs'); // For password hashing
-const jwt = require('jsonwebtoken'); // For creating and verifying JWTs
-const User = require('../models/User'); // Import the User model
-const auth = require('../middleware/auth'); // Import the authentication middleware
+const router = express.Router();
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+const auth = require('../middleware/auth');
+const sendEmail = require('../utils/sendEmail'); // Import the email utility
+const crypto = require('crypto'); // Node.js built-in module for cryptography
 
 // @route   POST api/auth/register
 // @desc    Register a new user
-// @access  Public (no authentication needed to register)
+// @access  Public
 router.post('/register', async (req, res) => {
-    // Destructure data from the request body
     const { username, email, password } = req.body;
 
     try {
-        // Check if a user with the given email already exists
         let user = await User.findOne({ email });
         if (user) {
             return res.status(400).json({ msg: 'User already exists' });
         }
 
-        // Create a new User instance
         user = new User({ username, email, password });
 
-        // Hash the password
-        const salt = await bcrypt.genSalt(10); // Generate a salt (random string)
-        user.password = await bcrypt.hash(password, salt); // Hash the password with the salt
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
 
-        // Save the new user to the database
         await user.save();
 
-        // Create a JWT payload (contains user ID)
-        const payload = {
-            user: {
-                id: user.id // Mongoose creates an 'id' virtual getter for '_id'
-            }
-        };
-
-        // Sign the token (create the JWT)
-        // The token expires in 1 hour (for demonstration, use longer in production)
+        const payload = { user: { id: user.id } };
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
-            if (err) throw err; // If there's an error signing, throw it
-            res.json({ token }); // Send the token back to the client
+            if (err) throw err;
+            res.json({ token });
         });
     } catch (err) {
         console.error(err.message);
@@ -55,25 +44,19 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        // Check if user exists
-        let user = await User.findOne({ email });
+        // Use select('+password') to explicitly include the password field
+        // because we set select: false in the User model schema
+        let user = await User.findOne({ email }).select('+password');
         if (!user) {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
-        // Compare provided password with hashed password in database
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
-        // Create and sign JWT if credentials are valid
-        const payload = {
-            user: {
-                id: user.id
-            }
-        };
-
+        const payload = { user: { id: user.id } };
         jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' }, (err, token) => {
             if (err) throw err;
             res.json({ token });
@@ -84,14 +67,106 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// @route   POST api/auth/forgotpassword
+// @desc    Request password reset (send email with token)
+// @access  Public
+router.post('/forgotpassword', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ msg: 'User with that email does not exist' });
+        }
+
+        // Get reset token from User model method
+        const resetToken = user.getResetPasswordToken();
+
+        // Save the user with the new token and expiry
+        await user.save({ validateBeforeSave: false }); // Disable validation to save token/expire fields
+
+        // Create reset URL
+        // In production, this should be your frontend's deployed URL
+        const resetUrl = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/resetpassword/${resetToken}`;
+
+        const message = `
+            <h1>You have requested a password reset</h1>
+            <p>Please go to this link to reset your password:</p>
+            <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+            <p>This link is valid for 10 minutes.</p>
+            <p>If you did not request this, please ignore this email.</p>
+        `;
+
+        try {
+            await sendEmail({
+                to: user.email,
+                subject: 'Mental Health App: Password Reset Request',
+                html: message
+            });
+
+            res.status(200).json({ success: true, msg: 'Password reset email sent' });
+        } catch (err) {
+            console.error('Error sending email:', err.message);
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpire = undefined;
+            await user.save({ validateBeforeSave: false });
+            return res.status(500).json({ msg: 'Email could not be sent' });
+        }
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
+// @route   PUT api/auth/resetpassword/:resettoken
+// @desc    Reset password using token
+// @access  Public
+router.put('/resetpassword/:resettoken', async (req, res) => {
+    const { password } = req.body;
+
+    // Hash the incoming reset token to compare with the hashed token in DB
+    const resetPasswordToken = crypto
+        .createHash('sha256')
+        .update(req.params.resettoken)
+        .digest('hex');
+
+    try {
+        const user = await User.findOne({
+            resetPasswordToken,
+            resetPasswordExpire: { $gt: Date.now() } // Token is valid and not expired
+        });
+
+        if (!user) {
+            return res.status(400).json({ msg: 'Invalid or expired reset token' });
+        }
+
+        // Set new password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+
+        // Clear reset token fields
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpire = undefined;
+
+        await user.save(); // Save the new password and clear token fields
+
+        res.status(200).json({ success: true, msg: 'Password reset successful' });
+
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server error');
+    }
+});
+
 // @route   GET api/auth
 // @desc    Get logged in user (after token verification)
-// @access  Private (requires authentication token)
+// @access  Private
 router.get('/', auth, async (req, res) => {
     try {
-        // req.user is populated by the auth middleware with the user's ID
-        // Select all user fields except the password
-        const user = await User.findById(req.user.id).select('-password');
+        // Use select('+password') to explicitly include the password field
+        const user = await User.findById(req.user.id).select('-password'); // Exclude password for this route
         res.json(user);
     } catch (err) {
         console.error(err.message);
