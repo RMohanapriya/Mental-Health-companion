@@ -1,185 +1,5 @@
 /* frontend/styles/Journal.module.css */
-.container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f3e5f5 0%, #e0f2f7 100%);
-  padding: 1.25rem; /* Use rem */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.header {
-  width: 100%;
-  max-width: 800px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 0; /* Use rem */
-  border-bottom: 1px solid #d1c4e9;
-  margin-bottom: 1.875rem; /* Use rem */
-}
-
-.header h1 {
-  color: #6a1b9a;
-  font-size: 2.5rem;
-  margin: 0;
-}
-
-.backButton {
-  background-color: #9c27b0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-}
-
-.backButton:hover {
-  background-color: #7b1fa2;
-}
-
-.main {
-  width: 100%;
-  max-width: 800px;
-  display: flex;
-  flex-direction: column;
-  gap: 1.875rem; /* Use rem */
-}
-
-.journalForm {
-  background-color: white;
-  padding: 1.875rem; /* Use rem */
-  border-radius: 0.75rem; /* Use rem */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem; /* Use rem */
-}
-
-.journalForm textarea {
-  width: 100%;
-  padding: 0.75rem; /* Use rem */
-  border: 1px solid #e0e0e0;
-  border-radius: 0.5rem; /* Use rem */
-  font-size: 1rem;
-  resize: vertical;
-  min-height: 9.375rem; /* Use rem */
-}
-
-.moodSelector {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem; /* Use rem */
-}
-
-.moodSelector label {
-  font-weight: bold;
-  color: #555;
-  font-size: 0.95rem; /* Slightly smaller */
-}
-
-.moodSelector select {
-  padding: 0.625rem; /* Use rem */
-  border: 1px solid #e0e0e0;
-  border-radius: 0.5rem; /* Use rem */
-  font-size: 1rem;
-  background-color: white;
-  cursor: pointer;
-}
-
-.journalForm .button {
-  align-self: flex-start;
-  margin-top: 0.625rem; /* Use rem */
-}
-
-.journalForm .cancelButton {
-  background-color: #757575;
-  margin-left: 0.625rem; /* Use rem */
-}
-
-.journalForm .cancelButton:hover {
-  background-color: #616161;
-}
-
-.entryList {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem; /* Use rem */
-}
-
-.noEntries {
-  text-align: center;
-  color: #777;
-  font-style: italic;
-  padding: 1.875rem; /* Use rem */
-  background-color: white;
-  border-radius: 0.75rem; /* Use rem */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
-
-.journalEntryCard {
-  background-color: white;
-  padding: 1.5rem; /* Use rem */
-  border-radius: 0.75rem; /* Use rem */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  border-left: 0.3125rem solid #ab47bc; /* Use rem */
-  position: relative;
-}
-
-.entryDate {
-  font-size: 0.9rem;
-  color: #888;
-  margin-bottom: 0.625rem; /* Use rem */
-  border-bottom: 1px dashed #eee;
-  padding-bottom: 0.5rem; /* Use rem */
-}
-
-.entryContent {
-  font-size: 1.1rem;
-  margin-bottom: 0.9375rem; /* Use rem */
-  color: #333;
-  white-space: pre-wrap;
-}
-
-.entryMood, .entrySentiment {
-  font-size: 0.95rem;
-  color: #666;
-  margin-bottom: 0.3125rem; /* Use rem */
-}
-
-.entrySentiment strong {
-  font-weight: bold;
-  color: #6a1b9a;
-}
-
-.entryActions {
-  display: flex;
-  gap: 0.625rem; /* Use rem */
-  margin-top: 0.9375rem; /* Use rem */
-  border-top: 1px dashed #eee;
-  padding-top: 0.9375rem; /* Use rem */
-}
-
-.editButton {
-  background-color: #4caf50;
-}
-
-.editButton:hover {
-  background-color: #388e3c;
-}
-
-.deleteButton {
-  background-color: #f44336;
-}
-
-.deleteButton:hover {
-  background-color: #d32f2f;
-}
-
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  font-size: 1.5rem;
-  color: #666;
-}
+/* ... (existing styles) ... */
 
 @media (max-width: 768px) {
   .header {
@@ -191,10 +11,25 @@
     font-size: 2rem;
   }
   .main {
-    padding: 0 0.5rem; /* Reduce horizontal padding */
+    padding: 0 0.5rem; /* Reduce horizontal padding for main content */
   }
   .journalForm, .journalEntryCard {
-    padding: 1.25rem;
+    padding: 1.25rem; /* Reduce padding for forms and cards */
+  }
+  .journalForm textarea {
+    min-height: 7rem; /* Adjust textarea height */
+  }
+  .moodSelector label {
+    font-size: 0.9rem;
+  }
+  .moodSelector select {
+    padding: 0.5rem;
+  }
+  .entryContent {
+    font-size: 1rem;
+  }
+  .entryMood, .entrySentiment {
+    font-size: 0.85rem;
   }
 }
 
@@ -206,7 +41,10 @@
     margin-bottom: 1.5rem;
   }
   .header h1 {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
+  }
+  .journalForm, .journalEntryCard {
+    padding: 1rem; /* Further reduce padding */
   }
   .journalForm .button,
   .journalForm .cancelButton {
@@ -217,6 +55,6 @@
     margin-top: 0.5rem; /* Add top margin if stacked */
   }
   .entryContent {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 }
