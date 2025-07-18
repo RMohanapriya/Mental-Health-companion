@@ -1,0 +1,192 @@
+/* frontend/styles/Journal.module.css */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f3e5f5 0%, #e0f2f7 100%); /* Soft purple-blue gradient */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #d1c4e9; /* Lighter border */
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  color: #6a1b9a; /* Deep purple */
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.backButton {
+  background-color: #9c27b0; /* Purple */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.backButton:hover {
+  background-color: #7b1fa2;
+}
+
+.main {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.journalForm {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.journalForm textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  resize: vertical;
+  min-height: 150px;
+}
+
+.moodSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.moodSelector label {
+  font-weight: bold;
+  color: #555;
+}
+
+.moodSelector select {
+  padding: 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+}
+
+.journalForm .button {
+  align-self: flex-start; /* Align button to left */
+  margin-top: 10px;
+}
+
+.journalForm .cancelButton {
+  background-color: #757575; /* Grey for cancel */
+  margin-left: 10px;
+}
+
+.journalForm .cancelButton:hover {
+  background-color: #616161;
+}
+
+.entryList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.noEntries {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  padding: 30px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.journalEntryCard {
+  background-color: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  border-left: 5px solid #ab47bc; /* Purple accent */
+  position: relative;
+}
+
+.entryDate {
+  font-size: 0.9rem;
+  color: #888;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed #eee;
+  padding-bottom: 8px;
+}
+
+.entryContent {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  color: #333;
+  white-space: pre-wrap; /* Preserves whitespace and line breaks */
+}
+
+.entryMood, .entrySentiment {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.entrySentiment strong {
+  font-weight: bold;
+  color: #6a1b9a; /* Match heading color */
+}
+
+.entryActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  border-top: 1px dashed #eee;
+  padding-top: 15px;
+}
+
+.editButton {
+  background-color: #4caf50; /* Green for edit */
+}
+
+.editButton:hover {
+  background-color: #388e3c;
+}
+
+.deleteButton {
+  background-color: #f44336; /* Red for delete */
+}
+
+.deleteButton:hover {
+  background-color: #d32f2f;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 1.5rem;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+  .main {
+    padding: 0 10px;
+  }
+  .journalForm, .journalEntryCard {
+    padding: 20px;
+  }
+}
