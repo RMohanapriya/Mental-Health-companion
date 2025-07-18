@@ -1,11 +1,9 @@
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react'; // Import useState
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import styles from '../styles/Dashboard.module.css';
-import axios from 'axios'; // Import axios to fetch journal data
+import axios from 'axios';
 
-// Import Chart.js components
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -16,9 +14,8 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import { Line } from 'react-chartjs-2'; // Import Line chart component
+import { Line } from 'react-chartjs-2';
 
-// Register Chart.js components
 ChartJS.register(
     CategoryScale,
     LinearScale,
@@ -32,14 +29,14 @@ ChartJS.register(
 export default function Dashboard() {
     const { user, loading, logout } = useAuth();
     const router = useRouter();
-    const [chartData, setChartData] = useState(null); // State to store data for the chart
-    const [chartOptions, setChartOptions] = useState(null); // State to store chart options
+    const [chartData, setChartData] = useState(null);
+    const [chartOptions, setChartOptions] = useState(null);
 
     useEffect(() => {
         if (!loading && !user) {
             router.push('/login');
         } else if (user) {
-            fetchSentimentData(); // Fetch sentiment data when user is loaded
+            fetchSentimentData();
         }
     }, [user, loading, router]);
 
@@ -48,13 +45,11 @@ export default function Dashboard() {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/journals`);
             const entries = res.data;
 
-            // Process data for the chart
-            // We want to group by date and calculate average sentiment for each day
             const dailySentiments = {};
 
             entries.forEach(entry => {
-                const date = new Date(entry.date).toLocaleDateString(); // Get date string
-                const sentimentScore = entry.sentiment?.score || 0; // Default to 0 if no score
+                const date = new Date(entry.date).toLocaleDateString();
+                const sentimentScore = entry.sentiment?.score || 0;
 
                 if (!dailySentiments[date]) {
                     dailySentiments[date] = { totalScore: 0, count: 0 };
@@ -63,17 +58,15 @@ export default function Dashboard() {
                 dailySentiments[date].count += 1;
             });
 
-            // Calculate average and sort by date
             const labels = Object.keys(dailySentiments).sort((a, b) => {
-                return new Date(a) - new Date(b); // Sort dates chronologically
+                return new Date(a) - new Date(b);
             });
 
             const dataPoints = labels.map(date => {
                 const daily = dailySentiments[date];
-                return daily.totalScore / daily.count; // Calculate average
+                return daily.totalScore / daily.count;
             });
 
-            // Set up chart data
             setChartData({
                 labels: labels,
                 datasets: [
@@ -82,13 +75,12 @@ export default function Dashboard() {
                         data: dataPoints,
                         borderColor: 'rgb(75, 192, 192)',
                         backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.1, // Smooth lines
+                        tension: 0.1,
                         fill: true,
                     },
                 ],
             });
 
-            // Set up chart options
             setChartOptions({
                 responsive: true,
                 plugins: {
@@ -98,6 +90,11 @@ export default function Dashboard() {
                     title: {
                         display: true,
                         text: 'Your Average Daily Sentiment Over Time',
+                        font: {
+                            size: 18, // Adjust chart title font size
+                            weight: 'bold'
+                        },
+                        color: '#333' // Chart title color
                     },
                 },
                 scales: {
@@ -107,46 +104,73 @@ export default function Dashboard() {
                         title: {
                             display: true,
                             text: 'Sentiment Score (-1: Negative, 1: Positive)',
+                            font: {
+                                size: 14
+                            },
+                            color: '#555'
                         },
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)' // Lighter grid lines
+                        }
                     },
+                    x: {
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    }
                 },
             });
 
         } catch (err) {
             console.error('Error fetching journal sentiment data:', err.response?.data?.msg || err.message);
-            // TODO: Display an error message to the user on the dashboard
         }
     };
 
 
-    if (loading) return <div className={styles.loading}>Loading dashboard...</div>;
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center text-xl text-gray-600 bg-gradient-to-br from-blue-50 to-purple-50">
+            Loading dashboard...
+        </div>
+    );
+
     if (!user) return null;
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <h1>Hello, {user?.username}! 👋</h1>
-                <button onClick={logout} className={styles.logoutButton}>Logout</button>
+        <div className="min-h-screen flex flex-col items-center p-6 bg-gradient-to-br from-blue-50 to-purple-50">
+            <header className="w-full max-w-4xl flex justify-between items-center py-5 border-b border-blue-200 mb-8">
+                <h1 className="text-3xl font-bold text-blue-800 m-0">Hello, {user?.username}! 👋</h1>
+                <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-600 transition-colors duration-300">
+                    Logout
+                </button>
             </header>
-            <main className={styles.main}>
-                <p className={styles.welcomeText}>Welcome to your mental health dashboard. How are you feeling today?</p>
-                <div className={styles.grid}>
-                    <Link href="/journal" className={styles.card}>
-                        <h2>Journal &rarr;</h2>
-                        <p>Express your thoughts and track your mood.</p>
+            <main className="w-full max-w-4xl flex flex-col items-center">
+                <p className="text-lg text-gray-600 mb-10 text-center">
+                    Welcome to your mental health dashboard. How are you feeling today?
+                </p>
+                <div className="flex flex-wrap justify-center gap-6 w-full mb-12">
+                    <Link href="/journal" className="flex flex-col items-start p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm w-full border border-blue-100">
+                        <h2 className="text-2xl font-semibold text-blue-700 mb-2">
+                            Journal &rarr;
+                        </h2>
+                        <p className="text-lg text-gray-700">
+                            Express your thoughts and track your mood.
+                        </p>
                     </Link>
-                    <Link href="/chatbot" className={styles.card}>
-                        <h2>Chatbot &rarr;</h2>
-                        <p>Talk to our AI companion for support.</p>
+                    <Link href="/chatbot" className="flex flex-col items-start p-6 bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 max-w-sm w-full border border-purple-100">
+                        <h2 className="text-2xl font-semibold text-purple-700 mb-2">
+                            Chatbot &rarr;
+                        </h2>
+                        <p className="text-lg text-gray-700">
+                            Talk to our AI companion for support.
+                        </p>
                     </Link>
                 </div>
-                {/* Sentiment trends chart */}
-                <div className={styles.chartContainer}>
-                    <h3>Your Sentiment Trends Over Time 📈</h3>
+                <div className="bg-white p-8 rounded-xl shadow-2xl w-full border border-gray-100">
+                    <h3 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Your Sentiment Trends Over Time 📈</h3>
                     {chartData ? (
                         <Line options={chartOptions} data={chartData} />
                     ) : (
-                        <p>No journal entries yet, or data is loading. Start journaling to see your trends!</p>
+                        <p className="text-gray-500 text-center py-8">No journal entries yet, or data is loading. Start journaling to see your trends!</p>
                     )}
                 </div>
             </main>

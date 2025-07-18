@@ -1,26 +1,24 @@
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios'; // For API calls
-import { useAuth } from '../context/AuthContext'; // For authentication context
-import { useRouter } from 'next/router'; // For navigation
-import styles from '../styles/Chatbot.module.css'; // Import CSS module
+import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
+import { useRouter } from 'next/router';
 
 export default function Chatbot() {
     const { user, loading } = useAuth();
     const router = useRouter();
-    const [messages, setMessages] = useState([]); // State for chat messages
-    const [input, setInput] = useState(''); // State for user input
-    const messagesEndRef = useRef(null); // Ref for auto-scrolling chat
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState('');
+    const messagesEndRef = useRef(null);
+    const [isSending, setIsSending] = useState(false); // New state for sending status
 
-    // Redirect if not authenticated
     useEffect(() => {
         if (!loading && !user) {
             router.push('/login');
         } else if (user) {
-            fetchChatHistory(); // Fetch chat history once user is loaded
+            fetchChatHistory();
         }
     }, [user, loading, router]);
 
-    // Auto-scroll to the bottom of the chat window on new messages
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
@@ -29,83 +27,88 @@ export default function Chatbot() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // Function to fetch chat history for the user
     const fetchChatHistory = async () => {
         try {
             const res = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatbot/history`);
             setMessages(res.data);
         } catch (err) {
             console.error('Error fetching chat history:', err.response?.data?.msg || err.message);
-            // TODO: Show error to user
         }
     };
 
-    // Function to handle sending a message to the chatbot
     const handleSendMessage = async (e) => {
         e.preventDefault();
-        if (!input.trim()) return; // Prevent sending empty messages
+        if (!input.trim() || isSending) return;
+
+        setIsSending(true); // Set sending state to true
 
         const userMessage = {
             message: input,
             isBot: false,
-            timestamp: new Date().toISOString(), // Use ISO string for consistent date handling
+            timestamp: new Date().toISOString(),
+            sentiment: { label: 'Analyzing...', score: 0 } // Optimistic sentiment
         };
 
-        // Optimistically add user message to UI for immediate feedback
         setMessages(prevMessages => [...prevMessages, userMessage]);
-        setInput(''); // Clear input field
+        setInput('');
 
         try {
-            // Send message to backend chatbot API
             const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/chatbot`, { message: userMessage.message });
-            // The backend returns both the user's message (with sentiment) and the bot's response
-            // Update messages state with the actual data from the server
-            // We slice(0, -1) to remove the optimistically added user message, then add the server's version + bot's response
-            setMessages(prevMessages => [...prevMessages.slice(0, -1), ...res.data]);
+            setMessages(prevMessages => [...prevMessages.filter(msg => msg !== userMessage), ...res.data]);
         } catch (err) {
             console.error('Error sending message:', err.response?.data?.msg || err.message);
-            // If sending fails, optionally remove the optimistically added message
-            setMessages(prevMessages => prevMessages.filter(msg => msg !== userMessage));
-            // TODO: Show error to user
+            setMessages(prevMessages => prevMessages.filter(msg => msg !== userMessage)); // Remove optimistic message on error
+        } finally {
+            setIsSending(false); // Reset sending state
         }
     };
 
-    if (loading) return <div className={styles.loading}>Loading chatbot...</div>;
-    if (!user) return null; // Redirection handled by useEffect
+    if (loading) return (
+        <div className="min-h-screen flex items-center justify-center text-xl text-gray-600 bg-gradient-to-br from-green-50 to-blue-50">
+            Loading chatbot...
+        </div>
+    );
+    if (!user) return null;
 
     return (
-        <div className={styles.container}>
-            <header className={styles.header}>
-                <h1>Chat with Your Companion Bot 🤖💬</h1>
-                <button onClick={() => router.push('/dashboard')} className={styles.backButton}>Back to Dashboard</button>
+        <div className="min-h-screen flex flex-col items-center p-6 bg-gradient-to-br from-green-50 to-blue-50">
+            <header className="w-full max-w-2xl flex justify-between items-center py-5 border-b border-green-200 mb-8">
+                <h1 className="text-3xl font-bold text-green-800 m-0">Chat with Your Companion Bot 🤖💬</h1>
+                <button onClick={() => router.push('/dashboard')} className="bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition-colors duration-300">
+                    Back to Dashboard
+                </button>
             </header>
 
-            <main className={styles.main}>
-                <div className={styles.chatWindow}>
+            <main className="w-full max-w-2xl flex flex-col flex-grow bg-white rounded-xl shadow-2xl border border-green-100 overflow-hidden">
+                <div className="flex-grow p-5 overflow-y-auto flex flex-col gap-4" style={{ minHeight: '300px' }}> {/* Added minHeight for chat window */}
                     {messages.map((msg, index) => (
                         <div
-                            key={index} // Using index as key is okay for static lists, but prefer unique IDs from DB for dynamic lists
-                            className={`${styles.message} ${msg.isBot ? styles.botMessage : styles.userMessage}`}
+                            key={index}
+                            className={`flex flex-col max-w-[75%] p-3 rounded-xl shadow-sm ${msg.isBot ? 'self-start bg-green-50 text-green-800 border border-green-100' : 'self-end bg-blue-50 text-blue-800 border border-blue-100'}`}
                         >
-                            <span className={styles.messageContent}>{msg.message}</span>
-                            <span className={styles.messageTime}>{new Date(msg.timestamp).toLocaleTimeString()}</span>
-                            {!msg.isBot && msg.sentiment && ( // Display sentiment only for user messages
-                                <span className={styles.messageSentiment}>
-                                    ({msg.sentiment.label} Score: {msg.sentiment.score.toFixed(2)})
-                                </span>
-                            )}
+                            <span className="text-base mb-1">{msg.message}</span>
+                            <span className="text-xs text-gray-500 self-end">
+                                {new Date(msg.timestamp).toLocaleTimeString()}
+                                {!msg.isBot && msg.sentiment && (
+                                    <span className="ml-2 italic">({msg.sentiment.label} Score: {msg.sentiment.score?.toFixed(2) || 'N/A'})</span>
+                                )}
+                            </span>
                         </div>
                     ))}
-                    <div ref={messagesEndRef} /> {/* For auto-scrolling */}
+                    <div ref={messagesEndRef} />
                 </div>
-                <form onSubmit={handleSendMessage} className={styles.chatInputForm}>
+                <form onSubmit={handleSendMessage} className="flex p-4 border-t border-gray-200 bg-gray-50">
                     <input
                         type="text"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         placeholder="Type your message here..."
+                        className="flex-grow p-3 border border-gray-300 rounded-full mr-3 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200 text-gray-800"
+                        disabled={isSending}
                     />
-                    <button type="submit" className={styles.button}>Send</button>
+                    <button type="submit" className="bg-green-600 text-white px-5 py-2 rounded-full text-lg font-bold hover:bg-green-700 transition-colors duration-300 shadow-md hover:shadow-lg" disabled={isSending}>
+                        {isSending ? 'Sending...' : 'Send'}
+                    </button>
                 </form>
             </main>
         </div>
