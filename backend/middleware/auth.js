@@ -1,4 +1,5 @@
-/*const jwt = require('jsonwebtoken'); // Used to verify JSON Web Tokens
+
+const jwt = require('jsonwebtoken'); // Used to verify JSON Web Tokens
 
 // This middleware function will be used to protect routes
 module.exports = function(req, res, next) {
@@ -27,4 +28,4 @@ module.exports = function(req, res, next) {
         // If token verification fails (e.g., token is expired or invalid)
         res.status(401).json({ msg: 'Token is not valid' });
     }
-};*/
+};
